@@ -1,0 +1,83 @@
+{
+
+function mkbool(val) {
+
+}
+
+function mkident(str) {
+
+}
+
+function mkident(name) {
+
+}
+
+function mksym(name) {
+
+}
+
+function mkstring(val) {
+
+}
+
+}
+
+Line
+	= Statement
+
+Statement
+	= InlineStatement
+
+InlineStatement
+	= Assignment NL
+	/ Expression NL
+
+Assignment
+	= lval:Ident _ '=' _ rval:Expression
+
+Expression
+	= Call
+
+Call
+	= MemberExpression '(' _ CallArgs? ')' _
+	/ MemberExpression
+
+CallArgs
+	= Expression
+
+MemberExpression
+	= Atom ('.' Ident)*
+
+Atom
+	= Boolean
+	/ Ident
+	/ Integer
+	/ String
+
+Ident
+	= name:$( [A-Za-z_] [A-Za-z0-9_]* ) {
+		return mkident(name);
+	}
+
+Boolean
+	= 'true' { return mkbool(true); }
+	/ 'false' { return mkbool(false); }
+
+// TODO: escaping
+String
+	= '"' chars:$( [^"]* ) '"' { return mkstring(chars); }
+
+Integer
+	= val:$( [0-9]+ ) { return mkint(val); }
+
+Symbol
+	= ':' sym:$( [A-Za-z_] [A-Za-z0-9_]* [\!\?]? ) {
+		return mksym(sym);
+	}
+
+NL
+	= '\n'
+	/ '\r' '\n'?
+
+_
+	= [ \t]*
